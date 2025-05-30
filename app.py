@@ -10,4 +10,4 @@ def valentine():
     return render_template('valentine.html', start_date=start_date.strftime("%Y-%m-%dT%H:%M:%S"))
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000)
