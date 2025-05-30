@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Наша история 💗</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --bg-start: #fff0f5;
+      --bg-end: #ffe4e1;
+      --text-color: #b03060;
+      --bar-bg: #ffd6e7;
+      --bar-fill: #ff80bf;
+      --bar-height: 12px;
+      --bar-radius: 8px;
+      --divider-color: #c71585;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to bottom, var(--bg-start), var(--bg-end));
+      font-family: 'Georgia', serif;
+      color: var(--text-color);
+      text-align: center;
+      min-height: 100vh;
+      overflow: hidden;
+      position: relative;
+    }
+
+    h1 {
+      font-size: 2.4em;
+      margin-top: 60px;
+      text-shadow: 1px 1px #ffffffaa;
+    }
+
+    .timer-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+
+    .timer-box {
+      width: 100%;
+      font-size: 1.2em;
+      padding: 20px 30px;
+      box-sizing: border-box;
+      text-align: center;
+      background: #ffffffcc;
+      border-radius: 20px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      line-height: 1.4;
+      backdrop-filter: blur(5px);
+    }
+
+    .extra-stats {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background-color: #fff0f8;
+      border: 2px solid #ffb6c1;
+      border-radius: 15px;
+      padding: 15px 20px;
+      box-shadow: 0 4px 10px rgba(255, 182, 193, 0.3);
+      min-width: 180px;
+      font-size: 1em;
+      line-height: 1.4;
+      transition: transform 0.3s ease;
+      cursor: grab;
+      user-select: none;
+    }
+
+    .card:active {
+      cursor: grabbing;
+    }
+
+    .card:hover {
+      transform: scale(1.05);
+    }
+
+    .card-title {
+      font-weight: bold;
+      color: #c71585;
+      margin-bottom: 5px;
+    }
+
+    .card-value {
+      font-size: 1.4em;
+      color: #b03060;
+    }
+
+    .progress-bar-container {
+      max-width: 400px;
+      margin: 30px auto 0 auto;
+      padding: 0 10px;
+      text-align: left;
+      font-family: 'Georgia', serif;
+      font-size: 0.9em;
+      color: var(--divider-color);
+      user-select: none;
+    }
+
+    .progress-bar {
+      position: relative;
+      width: 100%;
+      height: var(--bar-height);
+      background: var(--bar-bg);
+      border-radius: var(--bar-radius);
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+
+    .progress-fill {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      background: var(--bar-fill);
+      border-radius: var(--bar-radius) 0 0 var(--bar-radius);
+      width: 0%;
+      transition: width 1s ease-out;
+    }
+
+    .year-markers {
+      display: flex;
+      justify-content: space-between;
+      font-weight: bold;
+      color: var(--divider-color);
+    }
+
+    .footer {
+      margin-top: 50px;
+      font-size: 1.1em;
+      color: #a52a5a;
+      padding: 20px;
+    }
+
+    .floating-heart {
+      position: absolute;
+      font-size: 20px;
+      color: #ff69b4;
+      opacity: 0.7;
+      animation: float 8s linear infinite;
+      pointer-events: none;
+    }
+
+    @keyframes float {
+      0% {
+        transform: translateY(0) scale(1);
+        opacity: 0.7;
+      }
+      100% {
+        transform: translateY(-100vh) scale(1.5);
+        opacity: 0;
+      }
+    }
+
+    .share-button {
+      margin-top: 30px;
+      background-color: #ff99cc;
+      border: none;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 25px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .share-button:hover {
+      background-color: #ff80bf;
+    }
+
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 1.8em;
+      }
+      .timer-box {
+        font-size: 1em;
+        padding: 15px 20px;
+      }
+      .card {
+        min-width: 140px;
+        font-size: 0.9em;
+      }
+      .progress-bar-container {max-width: 90vw;
+        padding: 0 5vw;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Мы вместе уже 💖</h1>
+
+  <div class="timer-container">
+    <div class="timer-box" id="timer">Загрузка...</div>
+
+    <div class="extra-stats">
+      <div class="card" draggable="true" id="card-minutes">
+        <div class="card-title">Всего минут</div>
+        <div class="card-value" id="total-minutes">0</div>
+      </div>
+      <div class="card" draggable="true" id="card-seconds">
+        <div class="card-title">Всего секунд</div>
+        <div class="card-value" id="total-seconds">0</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="progress-bar-container" aria-label="Прогресс времени с начала периода">
+    <div class="progress-bar">
+      <div class="progress-fill" id="progress-fill"></div>
+    </div>
+    <div class="year-markers" id="year-markers"></div>
+  </div>
+
+  <div>
+    <button class="share-button" onclick="copyLink()">Поделиться 💌</button>
+  </div>
+
+  <div class="footer">Ты — лучшее, что со мной случалось 💗</div>
+
+  <script>
+    // Таймер с 1 декабря 2023
+    const startDate = new Date(2023, 11 - 1, 1, 0, 0, 0); // Ноябрь — 10, Декабрь — 11, поэтому 11-1 = 10 для ноября?
+    // Поправлю — месяцы считаются с 0: 0 = Январь, 11 = Декабрь. Значит 1 декабря — месяц 11.
+    // Исправлю:
+    const startDateCorrect = new Date(2023, 11, 1, 0, 0, 0);
+
+    function updateTimer() {
+      const now = new Date();
+      const diff = Math.floor((now - startDateCorrect) / 1000);
+
+      const days = Math.floor(diff / (3600 * 24));
+      const hours = Math.floor((diff % (3600 * 24)) / 3600);
+      const minutes = Math.floor((diff % 3600) / 60);
+      const seconds = diff % 60;
+
+      document.getElementById("timer").innerHTML = `
+        ${days} дней<br>
+        ${hours} часов<br>
+        ${minutes} минут<br>
+        ${seconds} секунд
+      `;
+
+      document.getElementById("total-minutes").textContent = Math.floor(diff / 60);
+      document.getElementById("total-seconds").textContent = diff;
+    }
+
+    setInterval(updateTimer, 1000);
+    updateTimer();
+
+
+    // Плавающие сердца
+    function createHeart() {
+      const heart = document.createElement("div");
+      heart.className = "floating-heart";
+      heart.innerText = "💗";
+      heart.style.left = Math.random() * 100 + "vw";
+      heart.style.top = "100vh";
+      heart.style.fontSize = 16 + Math.random() * 10 + "px";
+      heart.style.animationDuration = 6 + Math.random() * 4 + "s";
+      document.body.appendChild(heart);
+      setTimeout(() => heart.remove(), 10000);
+    }
+    setInterval(createHeart, 700);
+
+    // Копирование ссылки
+    function copyLink() {
+      navigator.clipboard
+        .writeText(window.location.href)
+        .then(() => alert("Ссылка на валентинку скопирована 💌"));
+    }
+
+    // Прогресс-бар времени с 1 декабря 2023 по 1 декабря 2028
+    function updateProgressBar() {
+      const now = new Date();
+
+      // 1 декабря 2023 00:00
+      const startDate = new Date(2021, 11, 1, 0, 0, 0);
+
+      // 1 декабря 2028 00:00
+      const endDate = new Date(2028, 11, 1, 0, 0, 0);
+
+      const totalMs = endDate - startDate;
+      let passedMs = now - startDate;
+
+      if (passedMs < 0) passedMs = 0;
+      if (passedMs > totalMs) passedMs = totalMs;
+
+      const percent = (passedMs / totalMs) * 100;
+
+      document.getElementById("progress-fill").style.width = percent + "%";
+
+      // Маркеры годов
+      const markersContainer = document.getElementById("year-markers");
+      markersContainer.innerHTML = "";
+      for(let year = 2023; year <= 2028; year++) {
+        const div = document.createElement("div");
+        div.textContent = year;
+        markersContainer.appendChild(div);
+      }
+    }
+
+    updateProgressBar();
+    setInterval(updateProgressBar, 60000);
+  </script>
+</body>
+</html>
