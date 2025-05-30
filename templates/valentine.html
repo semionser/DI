@@ -223,15 +223,16 @@
     <div class="year-markers" id="year-markers"></div>
   </div>
 
-
+  <div>
+    <button class="share-button" onclick="copyLink()">Поделиться 💌</button>
+  </div>
 
   <div class="footer">Ты — лучшее, что со мной случалось 💗</div>
 
   <script>
-    // Таймер с 1 декабря 2023
-    const startDate = new Date(2023, 11 - 1, 1, 0, 0, 0); // Ноябрь — 10, Декабрь — 11, поэтому 11-1 = 10 для ноября?
-    // Поправлю — месяцы считаются с 0: 0 = Январь, 11 = Декабрь. Значит 1 декабря — месяц 11.
-    // Исправлю:
+
+    const startDate = new Date(2023, 11 - 1, 1, 0, 0, 0);
+
     const startDateCorrect = new Date(2023, 11, 1, 0, 0, 0);
 
     function updateTimer() {
@@ -258,7 +259,6 @@
     updateTimer();
 
 
-    // Плавающие сердца
     function createHeart() {
       const heart = document.createElement("div");
       heart.className = "floating-heart";
@@ -272,21 +272,20 @@
     }
     setInterval(createHeart, 700);
 
-    // Копирование ссылки
     function copyLink() {
       navigator.clipboard
         .writeText(window.location.href)
         .then(() => alert("Ссылка на валентинку скопирована 💌"));
     }
 
-    // Прогресс-бар времени с 1 декабря 2023 по 1 декабря 2028
+
     function updateProgressBar() {
       const now = new Date();
 
-      // 1 декабря 2023 00:00
+
       const startDate = new Date(2021, 11, 1, 0, 0, 0);
 
-      // 1 декабря 2028 00:00
+
       const endDate = new Date(2028, 11, 1, 0, 0, 0);
 
       const totalMs = endDate - startDate;
@@ -299,7 +298,6 @@
 
       document.getElementById("progress-fill").style.width = percent + "%";
 
-      // Маркеры годов
       const markersContainer = document.getElementById("year-markers");
       markersContainer.innerHTML = "";
       for(let year = 2023; year <= 2028; year++) {
