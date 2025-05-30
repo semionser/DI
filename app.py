@@ -3,7 +3,7 @@ from datetime import datetime
 
 app = Flask(__name__)
 
-start_date = datetime(2000, 1, 12, 0, 0, 0)  # Укажи свою дату здесь
+start_date = datetime(2023, 11, 1, 0, 0, 0)  # Укажи свою дату здесь
 
 @app.route('/')
 def valentine():
