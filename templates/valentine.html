@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -25,7 +24,7 @@
       color: var(--text-color);
       text-align: center;
       min-height: 100vh;
-      overflow: hidden;
+      overflow-x: hidden;
       position: relative;
     }
 
@@ -181,6 +180,201 @@
       background-color: #ff80bf;
     }
 
+    /* Новые стили для улучшений */
+    .memory-section {
+      max-width: 600px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #ffffffcc;
+      border-radius: 20px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(5px);
+    }
+
+    .memory-title {
+      font-size: 1.5em;
+      color: #c71585;
+      margin-bottom: 15px;
+    }
+
+    .memory-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .memory-item {
+      background-color: #fff0f8;
+      border: 2px solid #ffb6c1;
+      border-radius: 15px;
+      padding: 15px;
+      text-align: center;
+      transition: transform 0.3s ease;
+      cursor: pointer;
+    }
+
+    .memory-item:hover {
+      transform: scale(1.05);
+    }
+
+    .memory-item img {
+      width: 100%;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+
+    .memory-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .memory-modal-content {
+      background-color: white;
+      padding: 20px;
+      border-radius: 15px;
+      max-width: 80%;
+      max-height: 80%;
+      overflow: auto;
+      text-align: center;
+    }
+
+    .memory-modal img {
+      max-width: 100%;
+      max-height: 400px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+    }
+
+    .close-modal {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      font-size: 24px;
+      cursor: pointer;
+      color: white;
+    }
+
+    .photo-placeholder {
+      width: 100%;
+      height: 100px;
+      background-color: #ffd6e7;
+      border-radius: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 10px;
+      font-size: 2em;
+    }
+
+    .milestone-section {
+      max-width: 600px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #ffffffcc;
+      border-radius: 20px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(5px);
+    }
+
+    .milestone-title {
+      font-size: 1.5em;
+      color: #c71585;
+      margin-bottom: 15px;
+    }
+
+    .milestone-list {
+      text-align: left;
+      margin-top: 20px;
+    }
+
+    .milestone-item {
+      margin-bottom: 15px;
+      padding-bottom: 15px;
+      border-bottom: 1px dashed #ffb6c1;
+    }
+
+    .milestone-date {
+      font-weight: bold;
+      color: #c71585;
+    }
+
+    .milestone-text {
+      margin-top: 5px;
+    }
+
+    .love-meter {
+      max-width: 400px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #ffffffcc;
+      border-radius: 20px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(5px);
+    }
+
+    .love-meter-title {
+      font-size: 1.5em;
+      color: #c71585;
+      margin-bottom: 15px;
+    }
+
+    .love-meter-bar {
+      height: 30px;
+      background-color: #ffd6e7;
+      border-radius: 15px;
+      overflow: hidden;
+      margin: 20px 0;
+    }
+
+    .love-meter-fill {
+      height: 100%;
+      background: linear-gradient(to right, #ff80bf, #ff1493);
+      border-radius: 15px;
+      width: 100%;
+      transition: width 1s ease;
+    }
+
+    .love-meter-text {
+      font-size: 1.2em;
+      color: #b03060;
+      margin-top: 10px;
+    }
+
+    .music-player {
+      margin-top: 30px;
+    }
+
+    .music-button {
+      background-color: #ff99cc;
+      border: none;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 25px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: background 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin: 0 auto;
+    }
+
+    .music-button:hover {
+      background-color: #ff80bf;
+    }
+
     @media (max-width: 600px) {
       h1 {
         font-size: 1.8em;
@@ -193,8 +387,12 @@
         min-width: 140px;
         font-size: 0.9em;
       }
-      .progress-bar-container {max-width: 90vw;
+      .progress-bar-container {
+        max-width: 90vw;
         padding: 0 5vw;
+      }
+      .memory-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
       }
     }
   </style>
@@ -217,22 +415,38 @@
     </div>
   </div>
 
-
-
+  <div class="progress-bar-container">
+    <div class="progress-bar">
+      <div class="progress-fill" id="progress-fill"></div>
     </div>
     <div class="year-markers" id="year-markers"></div>
   </div>
 
-  <div>
-    <button class="share-button" onclick="copyLink()">Поделиться 💌</button>
+  <!-- Новая секция: Любовный счетчик -->
+  <div class="love-meter">
+    <div class="love-meter-title">Наша любовь 💕</div>
+    <div class="love-meter-bar">
+      <div class="love-meter-fill" id="love-meter-fill"></div>
+    </div>
+    <div class="love-meter-text" id="love-meter-text">Загрузка...</div>
   </div>
 
-  <div class="footer">Ты — лучшее, что со мной случалось 💗</div>
+  <!-- Новая секция: Плейлист -->
+  <div class="music-player">
+    <button class="music-button" id="music-toggle">
+      <span>🎵</span>
+      <span id="music-text">Включить нашу песню</span>
+    </button>
+    <audio id="love-song" loop>
+      <source src="{{ url_for('static', filename='sounds/uwill.mp3') }}" type="audio/mpeg">
+      Ваш браузер не поддерживает аудио элемент.
+    </audio>
+  </div>
+
+
 
   <script>
-
     const startDate = new Date(2023, 11 - 1, 1, 0, 0, 0);
-
     const startDateCorrect = new Date(2023, 11, 1, 0, 0, 0);
 
     function updateTimer() {
@@ -258,7 +472,6 @@
     setInterval(updateTimer, 1000);
     updateTimer();
 
-
     function createHeart() {
       const heart = document.createElement("div");
       heart.className = "floating-heart";
@@ -278,14 +491,9 @@
         .then(() => alert("Ссылка на валентинку скопирована 💌"));
     }
 
-
     function updateProgressBar() {
       const now = new Date();
-
-
       const startDate = new Date(2021, 11, 1, 0, 0, 0);
-
-
       const endDate = new Date(2028, 11, 1, 0, 0, 0);
 
       const totalMs = endDate - startDate;
@@ -309,6 +517,149 @@
 
     updateProgressBar();
     setInterval(updateProgressBar, 60000);
+
+    // НОВЫЕ ФУНКЦИИ
+
+    // Любовный счетчик
+    function updateLoveMeter() {
+      const now = new Date();
+      const diff = now - startDateCorrect;
+      const daysTogether = Math.floor(diff / (1000 * 60 * 60 * 24));
+      
+      // Простая формула для расчета "уровня любви"
+      const loveLevel = Math.min(100, Math.floor(daysTogether / 365 * 100));
+      
+      document.getElementById("love-meter-fill").style.width = loveLevel + "%";
+      
+      let loveText = "";
+      if (loveLevel < 20) loveText = "Мы только начинаем 💘";
+      else if (loveLevel < 40) loveText = "Наша любовь растет 🌱";
+      else if (loveLevel < 60) loveText = "Мы становимся сильнее 💕";
+      else if (loveLevel < 80) loveText = "Наша любовь крепка 💖";
+      else loveText = "Мы созданы друг для друга 💞";
+      
+      document.getElementById("love-meter-text").textContent = `${loveLevel}% - ${loveText}`;
+    }
+    
+    updateLoveMeter();
+    setInterval(updateLoveMeter, 60000);
+
+    // Плейлист
+    const musicToggle = document.getElementById("music-toggle");
+    const loveSong = document.getElementById("love-song");
+    const musicText = document.getElementById("music-text");
+    let isPlaying = false;
+
+    musicToggle.addEventListener("click", function() {
+      if (isPlaying) {
+        loveSong.pause();
+        musicText.textContent = "Включить нашу песню";
+      } else {
+        loveSong.play().catch(e => {
+          console.log("Автовоспроизведение заблокировано:", e);
+          alert("Нажмите разрешить автовоспроизведение для включения музыки");
+        });
+        musicText.textContent = "Выключить музыку";
+      }
+      isPlaying = !isPlaying;
+    });
+
+    // Памятные моменты
+    const memories = [
+      { id: 1, title: "Наша первая встреча", date: "01.11.2023", description: "Помню, как мы впервые встретились..." },
+      { id: 2, title: "Первое свидание", date: "05.11.2023", description: "Мы пошли в то милое кафе..." },
+      { id: 3, title: "Наш первый поцелуй", date: "15.11.2023", description: "Это был самый волнующий момент..." },
+      { id: 4, title: "Первый совместный отпуск", date: "01.01.2024", description: "Мы провели незабываемые дни вместе..." },
+      { id: 5, title: "Наша первая годовщина", date: "01.11.2024", description: "Целый год вместе! Это было волшебно..." },
+      { id: 6, title: "Самое романтическое свидание", date: "14.02.2024", description: "Ты подготовил(а) такой сюрприз!" }
+    ];
+
+    const memoryGrid = document.getElementById("memory-grid");
+    memories.forEach(memory => {
+      const memoryItem = document.createElement("div");
+      memoryItem.className = "memory-item";
+      memoryItem.innerHTML = `
+        <div class="photo-placeholder">📸</div>
+        <div class="memory-item-title">${memory.title}</div>
+        <div class="memory-item-date">${memory.date}</div>
+      `;
+      memoryItem.addEventListener("click", () => openMemoryModal(memory));
+      memoryGrid.appendChild(memoryItem);
+    });
+
+    // Вехи отношений
+    const milestones = [
+      { date: "01.11.2023", text: "Мы встретились" },
+      { date: "15.11.2023", text: "Первое свидание" },
+      { date: "01.12.2023", text: "Стали парой" },
+      { date: "25.12.2023", text: "Первый совместный праздник" },
+      { date: "14.02.2024", text: "Первый День Святого Валентина" },
+      { date: "01.11.2024", text: "Первая годовщина" }
+    ];
+
+    const milestoneList = document.getElementById("milestone-list");
+    milestones.forEach(milestone => {
+      const milestoneItem = document.createElement("div");
+      milestoneItem.className = "milestone-item";
+      milestoneItem.innerHTML = `
+        <div class="milestone-date">${milestone.date}</div>
+        <div class="milestone-text">${milestone.text}</div>
+      `;
+      milestoneList.appendChild(milestoneItem);
+    });
+
+    // Модальное окно для памятных моментов
+    const memoryModal = document.getElementById("memory-modal");
+    const memoryModalContent = document.getElementById("memory-modal-content");
+    const closeModal = document.getElementById("close-modal");
+
+    function openMemoryModal(memory) {
+      memoryModalContent.innerHTML = `
+        <h3>${memory.title}</h3>
+        <p><strong>${memory.date}</strong></p>
+        <div class="photo-placeholder" style="height: 200px; margin: 15px auto;">📸</div>
+        <p>${memory.description}</p>
+      `;
+      memoryModal.style.display = "flex";
+    }
+
+    closeModal.addEventListener("click", () => {
+      memoryModal.style.display = "none";
+    });
+
+    memoryModal.addEventListener("click", (e) => {
+      if (e.target === memoryModal) {
+        memoryModal.style.display = "none";
+      }
+    });
+
+    // Перетаскивание карточек
+    const draggableCards = document.querySelectorAll('.card');
+    let offsetX, offsetY;
+
+    draggableCards.forEach(card => {
+      card.addEventListener('dragstart', (e) => {
+        e.dataTransfer.setData('text/plain', ''); // Необходимо для Firefox
+        offsetX = e.offsetX;
+        offsetY = e.offsetY;
+      });
+
+      card.addEventListener('dragend', (e) => {
+        // Позиционируем карточку в месте отпускания
+        card.style.position = 'absolute';
+        card.style.left = (e.clientX - offsetX) + 'px';
+        card.style.top = (e.clientY - offsetY) + 'px';
+        card.style.zIndex = '1000';
+        
+        // Возвращаем карточку на место через 3 секунды
+        setTimeout(() => {
+          card.style.position = '';
+          card.style.left = '';
+          card.style.top = '';
+          card.style.zIndex = '';
+        }, 3000);
+      });
+    });
   </script>
 </body>
 </html>
