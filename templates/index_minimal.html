@@ -1,10 +1,10 @@
-<!-- templates/tablet_landscape.html -->
+<!-- templates/swipe_weather.html -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>Москва · Погода для планшета (горизонт)</title>
+    <title>Москва · Погода</title>
     <style>
         * {
             margin: 0;
@@ -18,12 +18,12 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
             background: #000;
+            overflow: hidden;
         }
 
-        /* iOS градиенты для разной погоды */
-        .ios-gradient {
+        /* ===== ДИНАМИЧЕСКИЙ ФОН ===== */
+        .dynamic-bg {
             position: fixed;
             top: 0;
             left: 0;
@@ -33,39 +33,137 @@
             transition: all 1.2s cubic-bezier(0.25, 0.1, 0.25, 1);
         }
 
-        .ios-gradient.clear-day {
+        /* Ясный день */
+        .dynamic-bg.clear-day {
             background: linear-gradient(180deg, #6BB5E8 0%, #3D8FCC 50%, #1B4E7A 100%);
         }
+        .dynamic-bg.clear-day::before {
+            content: '';
+            position: absolute;
+            top: 10%;
+            right: 15%;
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle, rgba(255, 245, 150, 0.3) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: sunGlow 8s infinite alternate;
+        }
 
-        .ios-gradient.clear-night {
+        /* Ясная ночь */
+        .dynamic-bg.clear-night {
             background: linear-gradient(180deg, #1A2F47 0%, #0E1A26 50%, #03060A 100%);
         }
+        .dynamic-bg.clear-night::before {
+            content: '';
+            position: absolute;
+            top: 15%;
+            left: 20%;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, rgba(200, 220, 255, 0.2) 0%, transparent 70%);
+            border-radius: 50%;
+            box-shadow: 0 0 30px rgba(180, 200, 255, 0.3);
+            animation: moonGlow 10s infinite alternate;
+        }
 
-        .ios-gradient.partly-day {
+        /* Переменная облачность */
+        .dynamic-bg.partly-day {
             background: linear-gradient(180deg, #9BBFD9 0%, #6B95B3 50%, #34597A 100%);
         }
+        .dynamic-bg.partly-day::after {
+            content: '☁️ ☁️ ☁️';
+            position: absolute;
+            top: 20%;
+            right: 10%;
+            font-size: 80px;
+            opacity: 0.2;
+            transform: rotate(10deg);
+            white-space: nowrap;
+        }
 
-        .ios-gradient.cloudy {
+        /* Пасмурно */
+        .dynamic-bg.cloudy {
             background: linear-gradient(180deg, #8A9AA8 0%, #5F7285 50%, #3A4958 100%);
         }
-
-        .ios-gradient.fog {
-            background: linear-gradient(180deg, #A6B3BC 0%, #7C8C99 50%, #596874 100%);
+        .dynamic-bg.cloudy::after {
+            content: '☁️ ☁️ ☁️ ☁️';
+            position: absolute;
+            top: 15%;
+            left: 0;
+            font-size: 100px;
+            opacity: 0.3;
+            white-space: nowrap;
+            animation: cloudsMove 40s linear infinite;
         }
 
-        .ios-gradient.rain {
+        /* Туман */
+        .dynamic-bg.fog {
+            background: linear-gradient(180deg, #A6B3BC 0%, #7C8C99 50%, #596874 100%);
+        }
+        .dynamic-bg.fog::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(90deg,
+                rgba(255,255,255,0.05) 0px,
+                rgba(255,255,255,0.1) 50px,
+                rgba(255,255,255,0.05) 100px);
+            animation: fogMove 20s linear infinite;
+        }
+
+        /* Дождь */
+        .dynamic-bg.rain {
             background: linear-gradient(180deg, #57758C 0%, #2E4B62 50%, #1A2F3F 100%);
         }
 
-        .ios-gradient.snow {
+        /* Снег */
+        .dynamic-bg.snow {
             background: linear-gradient(180deg, #C7D7E0 0%, #9DB3C0 50%, #6A879C 100%);
         }
 
-        .ios-gradient.storm {
+        /* Гроза */
+        .dynamic-bg.storm {
             background: linear-gradient(180deg, #354A5C 0%, #1F3140 50%, #0F1A24 100%);
         }
+        .dynamic-bg.storm::after {
+            content: '⚡';
+            position: absolute;
+            top: 30%;
+            right: 30%;
+            font-size: 60px;
+            opacity: 0.4;
+            animation: lightning 4s infinite;
+        }
 
-        /* Слой для осадков */
+        @keyframes sunGlow {
+            0% { transform: scale(1); opacity: 0.3; }
+            100% { transform: scale(1.2); opacity: 0.5; }
+        }
+
+        @keyframes moonGlow {
+            0% { opacity: 0.2; transform: scale(1); }
+            100% { opacity: 0.4; transform: scale(1.1); }
+        }
+
+        @keyframes cloudsMove {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        @keyframes fogMove {
+            0% { background-position: 0% 0%; }
+            100% { background-position: 200% 0%; }
+        }
+
+        @keyframes lightning {
+            0%, 95%, 98% { opacity: 0; }
+            96%, 99% { opacity: 0.7; }
+        }
+
+        /* ===== СЛОЙ ДЛЯ ОСАДКОВ ===== */
         .precip-layer {
             position: fixed;
             top: 0;
@@ -83,69 +181,268 @@
             opacity: 0.6;
         }
 
-        /* Основной контейнер для горизонтального планшета */
-        .container {
+        /* ===== ОСНОВНОЙ КОНТЕЙНЕР С ГОРИЗОНТАЛЬНЫМ СКРОЛЛОМ ===== */
+        .app-container {
             position: relative;
             z-index: 10;
             width: 100%;
-            max-width: 1300px;
-            margin: 0 auto;
+            height: 100vh;
+            overflow-x: auto;
+            overflow-y: hidden;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            scroll-behavior: smooth;
+            display: flex;
         }
 
-        /* Карточка для горизонтального режима */
-        .landscape-card {
-            background: rgba(0, 0, 0, 0.25);
-            backdrop-filter: blur(50px) saturate(180%);
-            -webkit-backdrop-filter: blur(50px) saturate(180%);
-            border-radius: 70px;
-            padding: 35px;
+        .app-container::-webkit-scrollbar {
+            display: none; /* Скрываем скроллбар */
+        }
+
+        /* Каждый экран занимает всю ширину */
+        .screen {
+            flex: 0 0 100%;
+            scroll-snap-align: start;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* Индикаторы страниц */
+        .page-indicators {
+            position: fixed;
+            bottom: 30px;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            z-index: 20;
+            pointer-events: none;
+        }
+
+        .indicator {
+            width: 40px;
+            height: 4px;
+            border-radius: 2px;
+            background: rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .indicator.active {
+            background: white;
+            width: 60px;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+        }
+
+        /* ===== СТИЛИ ДЛЯ ПЕРВОГО ЭКРАНА (ВЕРТИКАЛЬНЫЙ) ===== */
+        .screen-1 .weather-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(40px) saturate(180%);
+            border-radius: 48px 24px 48px 24px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 30px 60px -30px rgba(0, 0, 0, 0.5);
+            padding: 40px;
             color: #fff;
-            box-shadow: 0 30px 50px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .screen-1 .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .screen-1 .date {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 20px;
+            border-radius: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            font-size: 0.95rem;
+        }
+
+        .screen-1 .weather-status {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 25px;
+            border-radius: 40px;
             border: 1px solid rgba(255, 255, 255, 0.15);
         }
 
-        /* Верхняя строка с локацией */
-        .header {
+        .screen-1 .status-icon {
+            font-size: 2rem;
+            filter: drop-shadow(0 0 15px currentColor);
+        }
+
+        .screen-1 .status-text {
+            font-size: 1rem;
+            letter-spacing: 0.5px;
+        }
+
+        .screen-1 .status-desc {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .screen-1 .time-section {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .screen-1 .clock {
+            font-size: 7.5rem;
+            font-weight: 280;
+            line-height: 1;
+            color: #fff;
+            text-shadow: 0 0 40px rgba(255, 255, 255, 0.3);
+            letter-spacing: 4px;
+        }
+
+        .screen-1 .location {
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 8px;
+        }
+
+        .screen-1 .metrics {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .screen-1 .metric {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 28px 12px 28px 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: 0.2s;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .screen-1 .metric:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .screen-1 .metric-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 10px;
+        }
+
+        .screen-1 .metric-value {
+            font-size: 2.2rem;
+            font-weight: 280;
+            color: #fff;
+        }
+
+        .screen-1 .metric-unit {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-left: 4px;
+        }
+
+        .screen-1 .metric-desc {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 8px;
+        }
+
+        .screen-1 .forecast {
+            margin-top: 30px;
+            display: none;
+        }
+
+        .screen-1 .forecast-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .screen-1 .close-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 30px;
+            padding: 6px 20px;
+            cursor: pointer;
+        }
+
+        .screen-1 .forecast-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 12px;
+        }
+
+        .screen-1 .forecast-day {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px 8px 20px 8px;
+            padding: 15px 5px;
+            text-align: center;
+        }
+
+        /* ===== СТИЛИ ДЛЯ ВТОРОГО ЭКРАНА (ГОРИЗОНТАЛЬНЫЙ ПЛАНШЕТ) ===== */
+        .screen-2 .glass-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(40px) saturate(180%);
+            border-radius: 70px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.5);
+            padding: 35px;
+            color: #fff;
+            width: 100%;
+            max-width: 1300px;
+        }
+
+        .screen-2 .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 25px;
-            color: rgba(255, 255, 255, 0.9);
         }
 
-        .location-name {
+        .screen-2 .location-name {
             font-size: 1.6rem;
             font-weight: 500;
             letter-spacing: 0.5px;
         }
 
-        .current-date {
-            background: rgba(255, 255, 255, 0.15);
+        .screen-2 .current-date {
+            background: rgba(255, 255, 255, 0.1);
             padding: 10px 25px;
             border-radius: 50px;
             font-size: 1.3rem;
         }
 
-        /* Горизонтальная компоновка основной части */
-        .main-horizontal {
+        .screen-2 .main-horizontal {
             display: grid;
             grid-template-columns: 1.2fr 0.8fr 1.2fr;
             gap: 25px;
             margin: 20px 0;
         }
 
-        /* Левая колонка - текущая температура */
-        .temp-column {
-            background: rgba(255, 255, 255, 0.05);
+        .screen-2 .temp-column {
+            background: rgba(255, 255, 255, 0.1);
             border-radius: 50px;
             padding: 30px 20px;
-            backdrop-filter: blur(10px);
             display: flex;
             flex-direction: column;
             justify-content: center;
+            text-align: center;
         }
 
-        .current-temp {
+        .screen-2 .current-temp {
             font-size: 7rem;
             font-weight: 300;
             line-height: 1;
@@ -154,220 +451,200 @@
             margin-bottom: 10px;
         }
 
-        .condition-text {
+        .screen-2 .condition-text {
             font-size: 2rem;
             font-weight: 400;
-            color: rgba(255, 255, 255, 0.9);
+            color: rgba(255, 255, 255, 0.95);
             margin-bottom: 10px;
         }
 
-        .high-low {
+        .screen-2 .high-low {
             font-size: 1.3rem;
             font-weight: 400;
-            color: rgba(255, 255, 255, 0.7);
+            color: rgba(255, 255, 255, 0.8);
             display: flex;
             gap: 20px;
+            justify-content: center;
         }
 
-        /* Средняя колонка - детальная информация */
-        .details-column {
-            background: rgba(255, 255, 255, 0.05);
+        .screen-2 .details-column {
+            background: rgba(255, 255, 255, 0.1);
             border-radius: 50px;
             padding: 30px 20px;
-            backdrop-filter: blur(10px);
         }
 
-        .details-grid {
+        .screen-2 .details-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 20px;
             height: 100%;
         }
 
-        .detail-item {
+        .screen-2 .detail-item {
             text-align: center;
-            background: rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.1);
             border-radius: 40px;
             padding: 20px 10px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
         }
 
-        .detail-label {
+        .screen-2 .detail-label {
             font-size: 1rem;
-            font-weight: 400;
-            color: rgba(255, 255, 255, 0.6);
+            color: rgba(255, 255, 255, 0.7);
             text-transform: uppercase;
-            letter-spacing: 1px;
             margin-bottom: 10px;
         }
 
-        .detail-value {
+        .screen-2 .detail-value {
             font-size: 2.2rem;
-            font-weight: 400;
             color: #fff;
         }
 
-        .detail-unit {
+        .screen-2 .detail-unit {
             font-size: 1.1rem;
             color: rgba(255, 255, 255, 0.6);
-            margin-left: 5px;
         }
 
-        /* Правая колонка - время и солнце */
-        .time-column {
-            background: rgba(255, 255, 255, 0.05);
+        .screen-2 .time-column {
+            background: rgba(255, 255, 255, 0.1);
             border-radius: 50px;
             padding: 30px 20px;
-            backdrop-filter: blur(10px);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
         }
 
-        .current-time-large {
+        .screen-2 .current-time-large {
             font-size: 3rem;
             font-weight: 300;
             text-align: center;
             margin-bottom: 20px;
         }
 
-        .sun-info-vertical {
+        .screen-2 .sun-info-vertical {
             display: flex;
             flex-direction: column;
             gap: 20px;
         }
 
-        .sun-item-large {
+        .screen-2 .sun-item-large {
             display: flex;
             align-items: center;
             gap: 20px;
-            background: rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.1);
             padding: 15px 25px;
             border-radius: 50px;
         }
 
-        .sun-icon-large {
+        .screen-2 .sun-icon-large {
             font-size: 2.5rem;
         }
 
-        .sun-text {
+        .screen-2 .sun-text {
             font-size: 1.5rem;
-            font-weight: 400;
         }
 
-        .sun-label {
+        .screen-2 .sun-label {
             font-size: 1rem;
             color: rgba(255, 255, 255, 0.6);
             margin-left: auto;
         }
 
-        /* Нижняя горизонтальная сетка */
-        .bottom-horizontal {
+        .screen-2 .bottom-horizontal {
             display: grid;
             grid-template-columns: 1fr 1.8fr;
             gap: 25px;
             margin-top: 25px;
         }
 
-        /* Астрономические данные */
-        .astro-card {
-            background: rgba(255, 255, 255, 0.05);
+        .screen-2 .astro-card {
+            background: rgba(255, 255, 255, 0.1);
             border-radius: 50px;
             padding: 25px;
-            backdrop-filter: blur(10px);
         }
 
-        .astro-title {
+        .screen-2 .astro-title {
             font-size: 1.2rem;
             font-weight: 500;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            color: rgba(255, 255, 255, 0.6);
+            color: rgba(255, 255, 255, 0.7);
             margin-bottom: 20px;
         }
 
-        .astro-grid {
+        .screen-2 .astro-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 15px;
         }
 
-        .astro-item {
+        .screen-2 .astro-item {
             display: flex;
             align-items: center;
             gap: 15px;
-            background: rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.1);
             padding: 15px;
             border-radius: 40px;
         }
 
-        .astro-icon {
+        .screen-2 .astro-icon {
             font-size: 2rem;
             width: 50px;
             height: 50px;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.15);
             border-radius: 30px;
         }
 
-        .astro-value {
+        .screen-2 .astro-value {
             font-size: 1.4rem;
             font-weight: 500;
-            color: #fff;
         }
 
-        .astro-label {
+        .screen-2 .astro-label {
             font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.5);
+            color: rgba(255, 255, 255, 0.6);
         }
 
-        /* Прогноз на неделю */
-        .weekly-card {
-            background: rgba(255, 255, 255, 0.05);
+        .screen-2 .weekly-card {
+            background: rgba(255, 255, 255, 0.1);
             border-radius: 50px;
             padding: 25px;
-            backdrop-filter: blur(10px);
         }
 
-        .forecast-title {
+        .screen-2 .forecast-title {
             font-size: 1.2rem;
             font-weight: 500;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            color: rgba(255, 255, 255, 0.6);
+            color: rgba(255, 255, 255, 0.7);
             margin-bottom: 20px;
         }
 
-        .forecast-grid-horizontal {
+        .screen-2 .forecast-grid-horizontal {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 15px;
         }
 
-        .forecast-card {
-            background: rgba(255, 255, 255, 0.08);
+        .screen-2 .forecast-card {
+            background: rgba(255, 255, 255, 0.1);
             border-radius: 40px;
             padding: 20px 15px;
             text-align: center;
         }
 
-        .forecast-day {
+        .screen-2 .forecast-day {
             font-size: 1.2rem;
             font-weight: 500;
-            color: #fff;
             margin-bottom: 10px;
         }
 
-        .forecast-icon-large {
+        .screen-2 .forecast-icon-large {
             font-size: 2.5rem;
             margin: 10px 0;
         }
 
-        .forecast-temps {
+        .screen-2 .forecast-temps {
             display: flex;
             justify-content: center;
             gap: 10px;
@@ -375,186 +652,294 @@
             margin: 10px 0;
         }
 
-        .forecast-high {
+        .screen-2 .forecast-high {
             color: #fff;
             font-weight: 500;
         }
 
-        .forecast-low {
+        .screen-2 .forecast-low {
             color: rgba(255, 255, 255, 0.6);
         }
 
-        .forecast-precip {
+        .screen-2 .forecast-precip {
             color: #8ED6FF;
             font-size: 1rem;
-            display: inline-block;
             background: rgba(142, 214, 255, 0.15);
             padding: 5px 15px;
             border-radius: 30px;
-            margin-top: 5px;
+            display: inline-block;
         }
 
-        /* Подвал */
+        /* Общий подвал */
         .footer {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-top: 25px;
             padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
             color: rgba(255, 255, 255, 0.5);
-            font-size: 1.1rem;
+            font-size: 1rem;
         }
 
-        /* Адаптация для меньших экранов */
+        /* Адаптивность */
         @media (max-width: 1000px) {
-            .main-horizontal {
+            .screen-2 .main-horizontal {
                 grid-template-columns: 1fr 1fr;
             }
-            .time-column {
+            .screen-2 .time-column {
                 grid-column: span 2;
             }
-            .forecast-grid-horizontal {
+            .screen-2 .forecast-grid-horizontal {
                 grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 900px) {
+            .screen-1 .metrics {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .screen-1 .clock {
+                font-size: 5.5rem;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .screen-1 .metrics {
+                grid-template-columns: 1fr;
+            }
+            .screen-1 .clock {
+                font-size: 4rem;
             }
         }
     </style>
 </head>
 <body>
-    <!-- iOS градиентный фон -->
-    <div class="ios-gradient clear-day" id="iosGradient"></div>
+    <!-- Динамический фон (меняется в зависимости от погоды) -->
+    <div class="dynamic-bg clear-day" id="dynamicBg"></div>
 
     <!-- Слой для осадков -->
     <div class="precip-layer">
         <canvas id="precipCanvas"></canvas>
     </div>
 
-    <div class="container">
-        <div class="landscape-card">
-            <!-- Верхняя строка -->
-            <div class="header">
-                <span class="location-name">Москва, Центр</span>
-                <span class="current-date" id="currentDate">24 февраля 2026</span>
-            </div>
-
-            <!-- Горизонтальная основная часть -->
-            <div class="main-horizontal">
-                <!-- Левая колонка - температура -->
-                <div class="temp-column">
-                    <div class="current-temp" id="mainTemp">--°</div>
-                    <div class="condition-text" id="mainCondition">Загрузка...</div>
-                    <div class="high-low" id="highLow">
-                        <span>↑ --°</span>
-                        <span>↓ --°</span>
-                    </div>
-                </div>
-
-                <!-- Средняя колонка - детали -->
-                <div class="details-column">
-                    <div class="details-grid">
-                        <div class="detail-item">
-                            <div class="detail-label">ВЕТЕР</div>
-                            <div class="detail-value" id="windValue">--<span class="detail-unit">м/с</span></div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">ВЛАЖН.</div>
-                            <div class="detail-value" id="humidityValue">--<span class="detail-unit">%</span></div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">ДАВЛ.</div>
-                            <div class="detail-value" id="pressureValue">--<span class="detail-unit">мм</span></div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">ОЩУЩ.</div>
-                            <div class="detail-value" id="feelsValue">--°</div>
+    <!-- Горизонтальный скролл с двумя экранами -->
+    <div class="app-container" id="appContainer">
+        <!-- Первый экран - Вертикальный дизайн (index_improved) -->
+        <div class="screen screen-1">
+            <div class="weather-card">
+                <div class="header">
+                    <span class="date" id="currentDate">24 февраля 2026</span>
+                    <div class="weather-status" id="weatherStatus">
+                        <span class="status-icon" id="statusIcon">☀️</span>
+                        <div>
+                            <div class="status-text" id="statusText">Ясный день</div>
+                            <div class="status-desc" id="statusDesc">без осадков, отличная видимость</div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Правая колонка - время и солнце -->
-                <div class="time-column">
-                    <div class="current-time-large" id="currentTime">--:--</div>
-                    <div class="sun-info-vertical">
-                        <div class="sun-item-large">
-                            <span class="sun-icon-large">🌅</span>
-                            <span class="sun-text" id="sunriseTime">07:34</span>
-                            <span class="sun-label">Восход</span>
-                        </div>
-                        <div class="sun-item-large">
-                            <span class="sun-icon-large">🌇</span>
-                            <span class="sun-text" id="sunsetTime">17:52</span>
-                            <span class="sun-label">Закат</span>
-                        </div>
-                    </div>
+                <div class="time-section">
+                    <div class="clock" id="moscowClock">--:--:--</div>
+                    <div class="location">МОСКВА · ЦЕНТР</div>
                 </div>
-            </div>
 
-            <!-- Нижняя горизонтальная часть -->
-            <div class="bottom-horizontal">
-                <!-- Астрономические данные -->
-                <div class="astro-card">
-                    <div class="astro-title">АСТРОНОМИЯ</div>
-                    <div class="astro-grid">
-                        <div class="astro-item">
-                            <span class="astro-icon">🌙</span>
-                            <div>
-                                <div class="astro-value" id="moonPhase">Первая четверть</div>
-                                <div class="astro-label" id="moonIllum">освещена 48%</div>
-                            </div>
-                        </div>
-                        <div class="astro-item">
-                            <span class="astro-icon">⏳</span>
-                            <div>
-                                <div class="astro-value" id="dayLength">10ч 23м</div>
-                                <div class="astro-label">долгота дня</div>
-                            </div>
-                        </div>
-                        <div class="astro-item">
-                            <span class="astro-icon">🌍</span>
-                            <div>
-                                <div class="astro-value" id="uvIndex">--</div>
-                                <div class="astro-label">УФ-индекс</div>
-                            </div>
-                        </div>
-                        <div class="astro-item">
-                            <span class="astro-icon">💨</span>
-                            <div>
-                                <div class="astro-value" id="windGust">--</div>
-                                <div class="astro-label">порывы</div>
-                            </div>
-                        </div>
+                <div class="metrics">
+                    <div class="metric" onclick="showForecast('sun')">
+                        <div class="metric-label">🌅 СВЕТОВОЙ ДЕНЬ</div>
+                        <div class="metric-value" id="sunrise">07:34</div>
+                        <div class="metric-desc" id="sunset">закат 17:52</div>
+                    </div>
+
+                    <div class="metric" onclick="showForecast('moon')">
+                        <div class="metric-label">🌙 ЛУНА</div>
+                        <div class="metric-value" id="moonPhase">Первая четверть</div>
+                        <div class="metric-desc" id="moonIllum">освещена 48%</div>
+                    </div>
+
+                    <div class="metric" onclick="showForecast('temp')">
+                        <div class="metric-label">🌡️ ТЕМПЕРАТУРА</div>
+                        <div class="metric-value" id="temp">--°</div>
+                        <div class="metric-desc" id="feels">ощущается как --°</div>
+                    </div>
+
+                    <div class="metric" onclick="showForecast('wind')">
+                        <div class="metric-label">💨 ВЕТЕР</div>
+                        <div class="metric-value" id="wind">--<span class="metric-unit">м/с</span></div>
+                        <div class="metric-desc" id="windDir">--</div>
                     </div>
                 </div>
 
-                <!-- Прогноз на неделю (горизонтальная сетка) -->
-                <div class="weekly-card">
-                    <div class="forecast-title">ПРОГНОЗ НА ДНИ</div>
-                    <div class="forecast-grid-horizontal" id="weeklyForecast">
-                        <!-- Заполняется через JS -->
+                <div class="forecast" id="forecastPanel">
+                    <div class="forecast-header">
+                        <span id="forecastTitle">📅 ПРОГНОЗ НА НЕДЕЛЮ</span>
+                        <span class="close-btn" onclick="hideForecast()">✕ закрыть</span>
+                    </div>
+                    <div class="forecast-grid" id="forecastGrid">
+                        <!-- Прогноз загружается динамически -->
                     </div>
                 </div>
-            </div>
 
-            <!-- Подвал -->
-            <div class="footer">
-                <span>Обновлено <span id="updateTime">--:--</span></span>
-
+                <div class="footer">
+                    <span>🇷🇺 Москва · данные каждые 5 мин</span>
+                    <span id="updateTime">--:--</span>
+                </div>
             </div>
         </div>
+
+        <!-- Второй экран - Горизонтальный планшетный дизайн (tablet_landscape) -->
+        <div class="screen screen-2">
+            <div class="glass-card">
+                <div class="header">
+                    <span class="location-name">Москва, Центр</span>
+                    <span class="current-date" id="currentDate2">24 февраля 2026</span>
+                </div>
+
+                <div class="main-horizontal">
+                    <div class="temp-column">
+                        <div class="current-temp" id="mainTemp2">--°</div>
+                        <div class="condition-text" id="mainCondition2">Загрузка...</div>
+                        <div class="high-low" id="highLow2">
+                            <span>↑ --°</span>
+                            <span>↓ --°</span>
+                        </div>
+                    </div>
+
+                    <div class="details-column">
+                        <div class="details-grid">
+                            <div class="detail-item">
+                                <div class="detail-label">ВЕТЕР</div>
+                                <div class="detail-value" id="windValue2">--<span class="detail-unit">м/с</span></div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">ВЛАЖН.</div>
+                                <div class="detail-value" id="humidityValue2">--<span class="detail-unit">%</span></div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">ДАВЛ.</div>
+                                <div class="detail-value" id="pressureValue2">--<span class="detail-unit">мм</span></div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">ОЩУЩ.</div>
+                                <div class="detail-value" id="feelsValue2">--°</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="time-column">
+                        <div class="current-time-large" id="currentTime2">--:--</div>
+                        <div class="sun-info-vertical">
+                            <div class="sun-item-large">
+                                <span class="sun-icon-large">🌅</span>
+                                <span class="sun-text" id="sunriseTime2">07:34</span>
+                                <span class="sun-label">Восход</span>
+                            </div>
+                            <div class="sun-item-large">
+                                <span class="sun-icon-large">🌇</span>
+                                <span class="sun-text" id="sunsetTime2">17:52</span>
+                                <span class="sun-label">Закат</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bottom-horizontal">
+                    <div class="astro-card">
+                        <div class="astro-title">АСТРОНОМИЯ</div>
+                        <div class="astro-grid">
+                            <div class="astro-item">
+                                <span class="astro-icon">🌙</span>
+                                <div>
+                                    <div class="astro-value" id="moonPhase2">Первая четверть</div>
+                                    <div class="astro-label" id="moonIllum2">освещена 48%</div>
+                                </div>
+                            </div>
+                            <div class="astro-item">
+                                <span class="astro-icon">⏳</span>
+                                <div>
+                                    <div class="astro-value" id="dayLength2">10ч 23м</div>
+                                    <div class="astro-label">долгота дня</div>
+                                </div>
+                            </div>
+                            <div class="astro-item">
+                                <span class="astro-icon">🌍</span>
+                                <div>
+                                    <div class="astro-value" id="uvIndex2">--</div>
+                                    <div class="astro-label">УФ-индекс</div>
+                                </div>
+                            </div>
+                            <div class="astro-item">
+                                <span class="astro-icon">💨</span>
+                                <div>
+                                    <div class="astro-value" id="windGust2">--</div>
+                                    <div class="astro-label">порывы</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="weekly-card">
+                        <div class="forecast-title">ПРОГНОЗ НА ДНИ</div>
+                        <div class="forecast-grid-horizontal" id="weeklyForecast2">
+                            <!-- Заполняется через JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="footer">
+                    <span>Обновлено <span id="updateTime2">--:--</span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Индикаторы страниц -->
+    <div class="page-indicators">
+        <div class="indicator active" id="indicator1"></div>
+        <div class="indicator" id="indicator2"></div>
     </div>
 
     <script>
         const SUN_DATA = {{ sun_data|tojson }};
         const MOON_DATA = {{ moon_data|tojson }};
 
-        // Инициализация фиксированных данных
-        document.getElementById('currentDate').textContent = '24 февраля 2026';
-        document.getElementById('sunriseTime').textContent = SUN_DATA.sunrise;
-        document.getElementById('sunsetTime').textContent = SUN_DATA.sunset;
-        document.getElementById('dayLength').textContent = SUN_DATA.day_length;
+        // Инициализация фиксированных данных для обоих экранов
+        document.getElementById('currentDate').textContent = '24 февраля 2026, вторник';
+        document.getElementById('currentDate2').textContent = '24 февраля 2026';
+
+        document.getElementById('sunrise').textContent = SUN_DATA.sunrise;
+        document.getElementById('sunset').textContent = `закат ${SUN_DATA.sunset}`;
+        document.getElementById('sunriseTime2').textContent = SUN_DATA.sunrise;
+        document.getElementById('sunsetTime2').textContent = SUN_DATA.sunset;
+
         document.getElementById('moonPhase').textContent = MOON_DATA.phase;
         document.getElementById('moonIllum').textContent = `освещена ${MOON_DATA.illumination}`;
+        document.getElementById('moonPhase2').textContent = MOON_DATA.phase;
+        document.getElementById('moonIllum2').textContent = `освещена ${MOON_DATA.illumination}`;
 
-        // Canvas для осадков
+        document.getElementById('dayLength2').textContent = SUN_DATA.day_length;
+
+        // ===== ОБРАБОТКА СВАЙПА =====
+        const container = document.getElementById('appContainer');
+        const indicator1 = document.getElementById('indicator1');
+        const indicator2 = document.getElementById('indicator2');
+
+        container.addEventListener('scroll', function() {
+            const scrollPosition = container.scrollLeft;
+            const width = container.clientWidth;
+            const activeIndex = Math.round(scrollPosition / width);
+
+            if (activeIndex === 0) {
+                indicator1.classList.add('active');
+                indicator2.classList.remove('active');
+            } else {
+                indicator1.classList.remove('active');
+                indicator2.classList.add('active');
+            }
+        });
+
+        // ===== CANVAS ДЛЯ ОСАДКОВ =====
         const canvas = document.getElementById('precipCanvas');
         const ctx = canvas.getContext('2d');
         let width, height;
@@ -623,22 +1008,41 @@
         resizeCanvas();
         requestAnimationFrame(drawPrecipitation);
 
-        // Загрузка недельного прогноза
+        // ===== ЗАГРУЗКА ПРОГНОЗА =====
+        let weeklyForecast = [];
+
         async function loadWeeklyForecast() {
             try {
                 const res = await fetch('/api/weekly');
-                const forecast = await res.json();
-                renderWeeklyForecast(forecast);
+                weeklyForecast = await res.json();
+                renderForecast();
+                renderWeeklyForecast2();
             } catch (e) {
                 console.error('Ошибка загрузки прогноза');
             }
         }
 
-        function renderWeeklyForecast(forecast) {
-            const container = document.getElementById('weeklyForecast');
+        function renderForecast() {
+            const grid = document.getElementById('forecastGrid');
+            grid.innerHTML = '';
+            weeklyForecast.forEach(day => {
+                grid.innerHTML += `
+                    <div class="forecast-day">
+                        <div class="forecast-weekday">${day.weekday}</div>
+                        <div class="forecast-date">${day.date}</div>
+                        <div class="forecast-icon">${day.icon}</div>
+                        <div class="forecast-temp">${day.temp_max > 0 ? '+' : ''}${day.temp_max}°</div>
+                        <div class="forecast-temp-min">${day.temp_min > 0 ? '+' : ''}${day.temp_min}°</div>
+                        <div class="forecast-precip">💧 ${day.precip}%</div>
+                    </div>
+                `;
+            });
+        }
+
+        function renderWeeklyForecast2() {
+            const container = document.getElementById('weeklyForecast2');
             container.innerHTML = '';
-            // Показываем только первые 4 дня для горизонтальной сетки
-            forecast.slice(0, 4).forEach(day => {
+            weeklyForecast.slice(0, 4).forEach(day => {
                 container.innerHTML += `
                     <div class="forecast-card">
                         <div class="forecast-day">${day.weekday}</div>
@@ -653,7 +1057,39 @@
             });
         }
 
-        // Описания погоды
+        // ===== ФУНКЦИИ ДЛЯ ПЕРВОГО ЭКРАНА =====
+        window.showForecast = function(type) {
+            const panel = document.getElementById('forecastPanel');
+            const title = document.getElementById('forecastTitle');
+
+            const titles = {
+                'sun': '☀️ СВЕТОВОЙ ДЕНЬ · ПРОГНОЗ',
+                'moon': '🌙 ЛУНА · ПРОГНОЗ',
+                'temp': '🌡️ ТЕМПЕРАТУРА · ПРОГНОЗ',
+                'wind': '💨 ВЕТЕР · ПРОГНОЗ'
+            };
+
+            title.textContent = titles[type] || '📅 ПРОГНОЗ НА НЕДЕЛЮ';
+            panel.style.display = 'block';
+        };
+
+        window.hideForecast = function() {
+            document.getElementById('forecastPanel').style.display = 'none';
+        };
+
+        // ===== ОПИСАНИЯ ПОГОДЫ =====
+        const weatherDescriptions = {
+            'clear-day': { name: 'Ясный день', desc: 'без осадков, отличная видимость', icon: '☀️' },
+            'clear-night': { name: 'Ясная ночь', desc: 'без осадков, звездное небо', icon: '🌙' },
+            'partly-day': { name: 'Переменная облачность', desc: 'возможны прояснения', icon: '⛅' },
+            'partly-night': { name: 'Переменная облачность', desc: 'облачно с прояснениями', icon: '☁️' },
+            'cloudy': { name: 'Пасмурно', desc: 'сплошная облачность', icon: '☁️' },
+            'fog': { name: 'Туман', desc: 'видимость ограничена', icon: '🌫️' },
+            'rain': { name: 'Дождь', desc: 'осадки, влажно', icon: '🌧️' },
+            'snow': { name: 'Снег', desc: 'осадки, морозно', icon: '❄️' },
+            'storm': { name: 'Гроза', desc: 'гроза, усиление ветра', icon: '⛈️' }
+        };
+
         const weatherIcons = {
             'clear': { icon: '☀️', name: 'Ясно', nightIcon: '🌙' },
             'partly': { icon: '⛅', name: 'Переменная облачность', nightIcon: '☁️' },
@@ -664,49 +1100,71 @@
             'storm': { icon: '⛈️', name: 'Гроза' }
         };
 
-        // Обновление погоды
+        // ===== ОБНОВЛЕНИЕ ПОГОДЫ =====
         async function updateWeather() {
             try {
                 const res = await fetch('/api/weather');
                 const data = await res.json();
 
-                // Обновляем показатели
-                document.getElementById('mainTemp').innerHTML = `${data.temp > 0 ? '+' : ''}${data.temp}°`;
-                document.getElementById('feelsValue').innerHTML = `${data.feels > 0 ? '+' : ''}${data.feels}°`;
-                document.getElementById('windValue').innerHTML = `${data.wind}<span class="detail-unit">м/с</span>`;
-                document.getElementById('humidityValue').innerHTML = `${data.humidity}<span class="detail-unit">%</span>`;
-                document.getElementById('pressureValue').innerHTML = `${data.pressure}<span class="detail-unit">мм</span>`;
-                document.getElementById('updateTime').textContent = data.timestamp;
-                document.getElementById('currentTime').textContent = data.timestamp;
-                document.getElementById('windGust').innerHTML = `${data.gusts || data.wind + 3} м/с`;
+                // Общие данные
+                const timestamp = data.timestamp;
+
+                // Обновляем первый экран
+                document.getElementById('temp').innerHTML = `${data.temp > 0 ? '+' : ''}${data.temp}°`;
+                document.getElementById('feels').textContent = `ощущается как ${data.feels > 0 ? '+' : ''}${data.feels}°`;
+                document.getElementById('wind').innerHTML = `${data.wind}<span class="metric-unit">м/с</span>`;
+                document.getElementById('windDir').textContent = data.wind_dir;
+                document.getElementById('updateTime').textContent = timestamp;
+
+                // Обновляем второй экран
+                document.getElementById('mainTemp2').innerHTML = `${data.temp > 0 ? '+' : ''}${data.temp}°`;
+                document.getElementById('feelsValue2').innerHTML = `${data.feels > 0 ? '+' : ''}${data.feels}°`;
+                document.getElementById('windValue2').innerHTML = `${data.wind}<span class="detail-unit">м/с</span>`;
+                document.getElementById('humidityValue2').innerHTML = `${data.humidity}<span class="detail-unit">%</span>`;
+                document.getElementById('pressureValue2').innerHTML = `${data.pressure}<span class="detail-unit">мм</span>`;
+                document.getElementById('updateTime2').textContent = timestamp;
+                document.getElementById('currentTime2').textContent = timestamp;
+                document.getElementById('windGust2').innerHTML = `${data.gusts || data.wind + 3} м/с`;
 
                 // УФ-индекс
                 const uvIndex = data.is_day ? Math.floor(Math.random() * 3 + 1) : 0;
-                document.getElementById('uvIndex').innerHTML = uvIndex;
+                document.getElementById('uvIndex2').innerHTML = uvIndex;
 
-                // Высокая/низкая температура
-                document.getElementById('highLow').innerHTML = `
+                // Высокая/низкая температура для второго экрана
+                document.getElementById('highLow2').innerHTML = `
                     <span>↑ ${data.temp + 2 > 0 ? '+' : ''}${data.temp + 2}°</span>
                     <span>↓ ${data.temp - 3 > 0 ? '+' : ''}${data.temp - 3}°</span>
                 `;
 
-                // Тип погоды
+                // Определяем тип погоды для первого экрана
+                let weatherKey = data.style;
+                if (data.style === 'clear') weatherKey = data.is_day ? 'clear-day' : 'clear-night';
+                else if (data.style === 'partly') weatherKey = data.is_day ? 'partly-day' : 'partly-night';
+
+                const weatherInfo = weatherDescriptions[weatherKey] ||
+                    { name: data.desc, desc: 'текущие условия', icon: '☁️' };
+
+                document.getElementById('statusIcon').textContent = weatherInfo.icon;
+                document.getElementById('statusText').textContent = weatherInfo.name;
+                document.getElementById('statusDesc').textContent = weatherInfo.desc;
+
+                // Определяем тип погоды для второго экрана
                 let weatherType = data.style;
                 let isDay = data.is_day;
 
-                const weatherInfo = weatherIcons[weatherType] || { icon: '☁️', name: data.desc };
-                const icon = (weatherType === 'clear' || weatherType === 'partly') && !isDay
-                    ? weatherInfo.nightIcon || weatherInfo.icon
-                    : weatherInfo.icon;
+                const weatherInfo2 = weatherIcons[weatherType] || { icon: '☁️', name: data.desc };
+                const icon2 = (weatherType === 'clear' || weatherType === 'partly') && !isDay
+                    ? weatherInfo2.nightIcon || weatherInfo2.icon
+                    : weatherInfo2.icon;
 
-                document.getElementById('mainCondition').innerHTML = `${icon} ${weatherInfo.name}`;
+                document.getElementById('mainCondition2').innerHTML = `${icon2} ${weatherInfo2.name}`;
 
-                // Обновляем градиент
-                const gradientEl = document.getElementById('iosGradient');
-                let gradientClass = data.style;
-                if (data.style === 'clear') gradientClass = isDay ? 'clear-day' : 'clear-night';
-                else if (data.style === 'partly') gradientClass = isDay ? 'partly-day' : 'partly-night';
-                gradientEl.className = `ios-gradient ${gradientClass}`;
+                // Обновляем фон
+                const bgEl = document.getElementById('dynamicBg');
+                let bgClass = data.style;
+                if (data.style === 'clear') bgClass = data.is_day ? 'clear-day' : 'clear-night';
+                else if (data.style === 'partly') bgClass = data.is_day ? 'partly-day' : 'partly-night';
+                bgEl.className = `dynamic-bg ${bgClass}`;
 
                 // Обновляем осадки
                 currentPrecip = data.precip;
@@ -717,15 +1175,19 @@
             }
         }
 
-        // Часы
+        // ===== ЧАСЫ =====
         function updateClock() {
             const now = new Date();
             const msk = (now.getUTCHours() + 3) % 24;
             const minutes = String(now.getUTCMinutes()).padStart(2, '0');
+            const seconds = String(now.getUTCSeconds()).padStart(2, '0');
+
+            document.getElementById('moscowClock').textContent =
+                `${String(msk).padStart(2,'0')}:${minutes}:${seconds}`;
             document.getElementById('currentTime').textContent = `${String(msk).padStart(2,'0')}:${minutes}`;
         }
 
-        // Инициализация
+        // ===== ИНИЦИАЛИЗАЦИЯ =====
         updateWeather();
         updateClock();
         loadWeeklyForecast();
